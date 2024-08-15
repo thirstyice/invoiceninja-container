@@ -113,13 +113,13 @@ questions:
       default: false
   - varialbe: extraEnvVars
     group: Container Environment Variables
-    label: Extra Environment Variables
+    label: "Extra Environment Variables"
     description: "Add extra env vars"
     schema:
       type: list
       items:
         - variable: envVar
-          label: Environment Variable
+          label: "Environment Variable"
           description: "Environment Variable"
           schema:
             type: dict
