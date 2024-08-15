@@ -111,7 +111,7 @@ questions:
     schema:
       type: boolean
       default: false
-  - varialbe: extraEnvVars
+  - variable: extraEnvVars
     group: Container Environment Variables
     label: "Extra Environment Variables"
     description: "Add extra env vars"
