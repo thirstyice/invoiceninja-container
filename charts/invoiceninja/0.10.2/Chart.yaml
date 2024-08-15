@@ -25,23 +25,10 @@ sources:
   - https://github.com/invoiceninja/invoiceninja
   - https://github.com/invoiceninja/dockerfiles
 dependencies:
+  dependencies:
   - name: common
-    repository: https://charts.bitnami.com/bitnami
-    tags:
-      - bitnami-common
-    version: 2.x.x
-  - condition: nginx.enabled
-    name: nginx
-    repository: https://charts.bitnami.com/bitnami
-    version: 13.x.x
-  - condition: mariadb.enabled
-    name: mariadb
-    repository: https://charts.bitnami.com/bitnami
-    version: 11.4.x
-  - condition: redis.enabled
-    name: redis
-    repository: https://charts.bitnami.com/bitnami
-    version: 16.x.x
+    repository: file://../../../common
+    version: 1.2.9
 maintainers:
-  - email: lwj5@hotmail.com
-    name: lwj5
+  - email: code@tauran.ca
+    name: thirstyice

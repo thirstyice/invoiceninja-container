@@ -1,0 +1,72 @@
+image:
+  pullPolicy: IfNotPresent
+  registry: docker.io
+  repository: invoiceninja/invoiceninja
+  tag: 5.6.24
+nginxImage:
+  pullPolicy: IfNotPresent
+  repository: nginx
+  tag: 1.25.4
+
+resources:
+  limits:
+    cpu: 4000m
+    memory: 8Gi
+
+podOptions:
+  dnsConfig:
+    options: []
+
+inConfig:
+  debug: false
+  appKey: ""
+  appURL: ""
+  userEmail: ""
+  userPassword: ""
+  logChannel: ""
+  broadcastDriver: ""
+  cacheDriver: ""
+  sessionDriver: ""
+  queueConnection: ""
+  trustedProxies: "*"
+  pdfGenerator: snappdf
+  mailer: "log"
+  requireHttps: false
+  existingSecret:
+  maxUploadLimit: 3
+  additionalEnvs: []
+
+commonLabels: {}
+commonAnnotations: {}
+serviceAccount:
+  create: false
+  annotations: {}
+  name: ""
+updateStrategy:
+  type: RollingUpdate
+
+phpMemoryLimit: 512
+additionalEnvs: []
+
+inNetwork:
+  webPort: 30072
+  certificateID:
+  nginx:
+    proxyTimeouts: 120
+    useDifferentAccessPort: false
+    externalAccessPort: 30073
+
+inStorage:
+  data:
+    type: ixVolume
+    ixVolumeConfig:
+      datasetName: data
+  public:
+    type: ixVolume
+    ixVolumeConfig:
+      datasetName: html
+  storage:
+    type: ixVolume
+    ixVolumeConfig:
+      datasetName: pgData
+  additionalStorages: []

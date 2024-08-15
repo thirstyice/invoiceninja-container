@@ -1,0 +1,6 @@
+runAsContext:
+  - userName: root
+    groupName: root
+    gid: 0
+    uid: 0
+    description: Nginx runs as root user.
