@@ -1,0 +1,185 @@
+groups:
+  - name: "Container Environment Variables"
+    description: "Set the environment that will be visible to the container"
+  - name: InvoiceNinja Configuration
+    description: "Configure InvoiceNinja"
+
+portals:
+  web_portal:
+    protocols:
+      - "$kubernetes-resource_configmap_portal_protocol"
+    host:
+      - "$kubernetes-resource_configmap_portal_host"
+    ports:
+      - "$kubernetes-resource_configmap_portal_port"
+    path: "$kubernetes-resource_configmap_portal_path"
+
+questions:
+  - variable: debug
+    group: InvoiceNinja Configuration
+    label: "Debug mode"
+    description: "Activate InvoiceNinja debug mode"
+    schema:
+      type: boolean
+      default: false
+  - variable: appKey
+    group: InvoiceNinja Configuration
+    label: App Key
+    description: "A 32 character long Application Key"
+    schema:
+      type: string
+      required: true
+      min_length: 32
+      max_length: 32
+      default: ""
+      valid_chars: "[a-zA-Z0-9]"
+  - variable: appURL
+    group: InvoiceNinja Configuration
+    label: "App URL"
+    description: "Override app URL"
+    schema:
+      type: string
+  - variable: userEmail
+    group: InvoiceNinja Configuration
+    label: User Email
+    description: "Email of user to create on first run"
+    schema:
+      type: string
+      immutable: true
+  - variable: userPassword
+    group: InvoiceNinja Configuration
+    label: User Password
+    description: "Password of user to create on first run"
+    schema:
+      type: string
+      private: true
+      immutable: true
+  - variable: trustedProxies
+    group: InvoiceNinja Configuration
+    label: Trusted Proxies
+    description: "List of trusted proxies for Invoice Ninja to communicate with the nginx proxy"
+    schema:
+      type: string
+      default: "*"
+  - variable: pdfGenerator
+    group: InvoiceNinja Configuration
+    label: PDF Generator
+    description: "Use local (snappdf) or Phantom JS PDF generation"
+    schema:
+      type: string
+      default: "snappdf"
+      enum:
+        - value: "snappdf"
+          description: "Use snappdf"
+        - value: "phantom"
+          description: "Use Phantom JS"
+  - variable: mailer
+    group: InvoiceNinja Configuration
+    label: Queue Connection
+    description: "Name of queue connection to use. May need to define other envs; see https://github.com/invoiceninja/invoiceninja/blob/v5-stable/config/mail.php"
+    schema:
+      type: string
+      default: "log"
+      show_if: [[ "debug", "=", "false" ]]
+      enum:
+        - value: "log"
+          description: Log
+        - value: "smtp"
+          description: "SMTP"
+        - value: "ses"
+          description: "SES"
+        - value: "mailgun"
+          description: "Mailgun"
+        - value: "brevo"
+          description: "Brevo"
+        - value: "postmark"
+          description: "Postmark"
+        - value: "sendmail"
+          description: "Sendmail"
+        - value: "array"
+          description: "Array"
+        - value: "gmail"
+          description: "Gmail"
+        - value: "office365"
+          description: "Office 365"
+        - value: "failover"
+          description: "Failover"
+  - variable: requireHttps
+    group: InvoiceNinja Configuration
+    label: Require HTTPS
+    description: "Force HTTPS for all connections to Invoice Ninja"
+    schema:
+      type: boolean
+      default: false
+  - varialbe: extraEnvVars
+    group: Container Environment Variables
+    label: Extra Environment Variables
+    description: "Add extra env vars"
+    schema:
+      type: list
+      items:
+        - variable: envVar
+          label: Environment Variable
+          description: "Environment Variable"
+          schema:
+            type: dict
+            attrs:
+              - variable: name
+                description: "Environment Variable Name"
+                label: "Name"
+                schema:
+                  type: string
+                  required: true
+              - variable: value
+                description: "Environment Variable Value"
+                label: Value
+                schema:
+                  type: string
+                  required: true
+  - variable: mariadb
+    label: MariaDB
+    group: InvoiceNinja Configuration
+    description: "MariaDB Config"
+    schema:
+      type: dict
+      attrs:
+        - variable: auth
+          label: "Authentication"
+          description: "Authentication parameters"
+          schema:
+            type: dict
+            attrs:
+              - variable: rootPassword
+                label: Root Password
+                description: MariaDB root password
+                schema:
+                  type: string
+                  required: true
+                  immutable: true
+              - variable: password
+                label: DB Password
+                description: MariaDB password
+                schema:
+                  type: string
+                  required: true
+                  immutable: true
+  - variable: redis
+    label: Redis
+    group: InvoiceNinja Configuration
+    description: "Redis Config"
+    schema:
+      type: dict
+      attrs:
+        - variable: auth
+          label: "Authentication"
+          description: "Authentication parameters"
+          schema:
+            type: dict
+            attrs:
+              - variable: password
+                label: Redis Password
+                description: Redis password
+                schema:
+                  type: string
+                  required: true
+                  immutable: true
