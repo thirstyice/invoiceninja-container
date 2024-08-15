@@ -1,11 +1,12 @@
-name: Release Charts
+name: Update Depedencies
 
 on:
   push:
     branches:
-      - master
+      - TrueNAS
     paths:
       - "charts/**"
+  workflow_dispatch:
 
 jobs:
   release:
@@ -28,7 +29,10 @@ jobs:
         run: |
           helm repo add bitnami https://charts.bitnami.com/bitnami
 
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@v1.4.1
-        env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
+      - name: Build Dependencies
+        run: |
+          /bin/bash -c 'for chart in charts/*/*; do if [[ -d $chart ]]; then cd $chart && helm dependency update; fi; done'
+
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        with:
+          commit_message: Update app depedencies
