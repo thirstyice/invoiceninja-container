@@ -3,7 +3,7 @@ name: catalog_update
 on:
   push:
     branches:
-      - 'master'
+      - 'TrueNAS'
   workflow_dispatch:
 
 jobs:
