@@ -1,0 +1,362 @@
+{
+    "0.10.2": {
+        "healthy": true,
+        "supported": true,
+        "healthy_error": null,
+        "location": "/__w/invoiceninja-container/invoiceninja-container/charts/invoiceninja/0.10.2",
+        "last_update": "2024-08-15 03:38:35",
+        "required_features": [],
+        "human_version": "5.6.24_0.10.2",
+        "version": "0.10.2",
+        "chart_metadata": {
+            "apiVersion": "v2",
+            "name": "invoiceninja",
+            "description": "A Helm chart to install Invoice Ninja",
+            "type": "application",
+            "version": "0.10.2",
+            "appVersion": "5.6.24",
+            "keywords": [
+                "invoiceninja"
+            ],
+            "home": "https://invoiceninja.github.io/dockerfiles",
+            "sources": [
+                "https://github.com/invoiceninja/invoiceninja",
+                "https://github.com/invoiceninja/dockerfiles"
+            ],
+            "dependencies": [
+                {
+                    "name": "common",
+                    "repository": "https://charts.bitnami.com/bitnami",
+                    "tags": [
+                        "bitnami-common"
+                    ],
+                    "version": "2.x.x"
+                },
+                {
+                    "condition": "nginx.enabled",
+                    "name": "nginx",
+                    "repository": "https://charts.bitnami.com/bitnami",
+                    "version": "13.x.x"
+                },
+                {
+                    "condition": "mariadb.enabled",
+                    "name": "mariadb",
+                    "repository": "https://charts.bitnami.com/bitnami",
+                    "version": "11.4.x"
+                },
+                {
+                    "condition": "redis.enabled",
+                    "name": "redis",
+                    "repository": "https://charts.bitnami.com/bitnami",
+                    "version": "16.x.x"
+                }
+            ],
+            "maintainers": [
+                {
+                    "email": "lwj5@hotmail.com",
+                    "name": "lwj5"
+                }
+            ]
+        },
+        "app_metadata": null,
+        "schema": {
+            "groups": [
+                {
+                    "name": "Container Environment Variables",
+                    "description": "Set the environment that will be visible to the container"
+                },
+                {
+                    "name": "InvoiceNinja Configuration",
+                    "description": "Configure InvoiceNinja"
+                }
+            ],
+            "portals": {
+                "web_portal": {
+                    "protocols": [
+                        "$kubernetes-resource_configmap_portal_protocol"
+                    ],
+                    "host": [
+                        "$kubernetes-resource_configmap_portal_host"
+                    ],
+                    "ports": [
+                        "$kubernetes-resource_configmap_portal_port"
+                    ],
+                    "path": "$kubernetes-resource_configmap_portal_path"
+                }
+            },
+            "questions": [
+                {
+                    "variable": "debug",
+                    "group": "InvoiceNinja Configuration",
+                    "label": "Debug mode",
+                    "description": "Activate InvoiceNinja debug mode",
+                    "schema": {
+                        "type": "boolean",
+                        "default": false
+                    }
+                },
+                {
+                    "variable": "appKey",
+                    "group": "InvoiceNinja Configuration",
+                    "label": "App Key",
+                    "description": "A 32 character long Application Key",
+                    "schema": {
+                        "type": "string",
+                        "required": true,
+                        "min_length": 32,
+                        "max_length": 32,
+                        "default": "",
+                        "valid_chars": "[a-zA-Z0-9]"
+                    }
+                },
+                {
+                    "variable": "appURL",
+                    "group": "InvoiceNinja Configuration",
+                    "label": "App URL",
+                    "description": "Override app URL",
+                    "schema": {
+                        "type": "string"
+                    }
+                },
+                {
+                    "variable": "userEmail",
+                    "group": "InvoiceNinja Configuration",
+                    "label": "User Email",
+                    "description": "Email of user to create on first run",
+                    "schema": {
+                        "type": "string",
+                        "immutable": true
+                    }
+                },
+                {
+                    "variable": "userPassword",
+                    "group": "InvoiceNinja Configuration",
+                    "label": "User Password",
+                    "description": "Password of user to create on first run",
+                    "schema": {
+                        "type": "string",
+                        "private": true,
+                        "immutable": true
+                    }
+                },
+                {
+                    "variable": "trustedProxies",
+                    "group": "InvoiceNinja Configuration",
+                    "label": "Trusted Proxies",
+                    "description": "List of trusted proxies for Invoice Ninja to communicate with the nginx proxy",
+                    "schema": {
+                        "type": "string",
+                        "default": "*"
+                    }
+                },
+                {
+                    "variable": "pdfGenerator",
+                    "group": "InvoiceNinja Configuration",
+                    "label": "PDF Generator",
+                    "description": "Use local (snappdf) or Phantom JS PDF generation",
+                    "schema": {
+                        "type": "string",
+                        "default": "snappdf",
+                        "enum": [
+                            {
+                                "value": "snappdf",
+                                "description": "Use snappdf"
+                            },
+                            {
+                                "value": "phantom",
+                                "description": "Use Phantom JS"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "variable": "mailer",
+                    "group": "InvoiceNinja Configuration",
+                    "label": "Queue Connection",
+                    "description": "Name of queue connection to use. May need to define other envs; see https://github.com/invoiceninja/invoiceninja/blob/v5-stable/config/mail.php",
+                    "schema": {
+                        "type": "string",
+                        "default": "log",
+                        "show_if": [
+                            [
+                                "debug",
+                                "=",
+                                "false"
+                            ]
+                        ],
+                        "enum": [
+                            {
+                                "value": "log",
+                                "description": "Log"
+                            },
+                            {
+                                "value": "smtp",
+                                "description": "SMTP"
+                            },
+                            {
+                                "value": "ses",
+                                "description": "SES"
+                            },
+                            {
+                                "value": "mailgun",
+                                "description": "Mailgun"
+                            },
+                            {
+                                "value": "brevo",
+                                "description": "Brevo"
+                            },
+                            {
+                                "value": "postmark",
+                                "description": "Postmark"
+                            },
+                            {
+                                "value": "sendmail",
+                                "description": "Sendmail"
+                            },
+                            {
+                                "value": "array",
+                                "description": "Array"
+                            },
+                            {
+                                "value": "gmail",
+                                "description": "Gmail"
+                            },
+                            {
+                                "value": "office365",
+                                "description": "Office 365"
+                            },
+                            {
+                                "value": "failover",
+                                "description": "Failover"
+                            }
+                        ]
+                    }
+                },
+                {
+                    "variable": "requireHttps",
+                    "group": "InvoiceNinja Configuration",
+                    "label": "Require HTTPS",
+                    "description": "Force HTTPS for all connections to Invoice Ninja",
+                    "schema": {
+                        "type": "boolean",
+                        "default": false
+                    }
+                },
+                {
+                    "variable": "extraEnvVars",
+                    "group": "Container Environment Variables",
+                    "label": "Extra Environment Variables",
+                    "description": "Add extra env vars",
+                    "schema": {
+                        "type": "list",
+                        "items": [
+                            {
+                                "variable": "envVar",
+                                "label": "Environment Variable",
+                                "description": "Environment Variable",
+                                "schema": {
+                                    "type": "dict",
+                                    "attrs": [
+                                        {
+                                            "variable": "name",
+                                            "description": "Environment Variable Name",
+                                            "label": "Name",
+                                            "schema": {
+                                                "type": "string",
+                                                "required": true
+                                            }
+                                        },
+                                        {
+                                            "variable": "value",
+                                            "description": "Environment Variable Value",
+                                            "label": "Value",
+                                            "schema": {
+                                                "type": "string",
+                                                "required": true
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "variable": "mariadb",
+                    "label": "MariaDB",
+                    "group": "InvoiceNinja Configuration",
+                    "description": "MariaDB Config",
+                    "schema": {
+                        "type": "dict",
+                        "attrs": [
+                            {
+                                "variable": "auth",
+                                "label": "Authentication",
+                                "description": "Authentication parameters",
+                                "schema": {
+                                    "type": "dict",
+                                    "attrs": [
+                                        {
+                                            "variable": "rootPassword",
+                                            "label": "Root Password",
+                                            "description": "MariaDB root password",
+                                            "schema": {
+                                                "type": "string",
+                                                "required": true,
+                                                "immutable": true
+                                            }
+                                        },
+                                        {
+                                            "variable": "password",
+                                            "label": "DB Password",
+                                            "description": "MariaDB password",
+                                            "schema": {
+                                                "type": "string",
+                                                "required": true,
+                                                "immutable": true
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                {
+                    "variable": "redis",
+                    "label": "Redis",
+                    "group": "InvoiceNinja Configuration",
+                    "description": "Redis Config",
+                    "schema": {
+                        "type": "dict",
+                        "attrs": [
+                            {
+                                "variable": "auth",
+                                "label": "Authentication",
+                                "description": "Authentication parameters",
+                                "schema": {
+                                    "type": "dict",
+                                    "attrs": [
+                                        {
+                                            "variable": "password",
+                                            "label": "Redis Password",
+                                            "description": "Redis password",
+                                            "schema": {
+                                                "type": "string",
+                                                "required": true,
+                                                "immutable": true
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                }
+            ]
+        },
+        "app_readme": "<h1>Invoice Ninja</h1>\n<p><a href=\"https://invoiceninja.github.io\">Invoice Ninja</a> is some invoicing software</p>",
+        "detailed_readme": "<h1>Invoice Ninja Helm Chart</h1>\n<p>This helm chart installs Invoice Ninja (IN) and its dependencies into a running\nKubernetes cluster.</p>\n<p>The chart installs the <a href=\"https://hub.docker.com/r/invoiceninja/invoiceninja\">Invoice Ninja</a> docker image.</p>\n<p>Please read <a href=\"#upgrading\">Upgrading</a> section before upgrading MAJOR versions.</p>\n<h2>Dependencies</h2>\n<ul>\n<li>The Bitnami <a href=\"https://github.com/bitnami/charts/tree/master/bitnami/common\">common</a> helm chart</li>\n<li>The Bitnami <a href=\"https://github.com/bitnami/charts/tree/master/bitnami/mariadb\">mariadb</a> helm chart</li>\n<li>The Bitnami <a href=\"https://github.com/bitnami/charts/tree/master/bitnami/nginx\">nginx</a> helm chart</li>\n<li>The Bitnami <a href=\"https://github.com/bitnami/charts/tree/master/bitnami/redis\">redis</a> helm chart</li>\n<li>Tested on Kubernetes 1.19+</li>\n</ul>\n<h2>Installing the Chart</h2>\n<p>To install the chart with the release name <code>invoiceninja</code>:</p>\n<p><code>bash\nhelm repo add invoiceninja https://invoiceninja.github.io/dockerfiles\nhelm install invoiceninja invoiceninja/invoiceninja --set appKey=changeit --set mariadb.auth.rootPassword=changeit --set mariadb.auth.password=changeit --set redis.auth.password=changeit</code></p>\n<p>The command deploys Invoice Ninja on the Kubernetes cluster in the default namespace. The <a href=\"#parameters\">Parameters</a> section lists the parameters that can be configured during installation.</p>\n<blockquote>\n<p><strong>Tip</strong>: List all releases using <code>helm list</code></p>\n</blockquote>\n<h2>Uninstalling the Chart</h2>\n<p>To uninstall/delete the <code>invoiceninja</code> deployment:</p>\n<p><code>bash\nhelm delete invoiceninja</code></p>\n<p>The command removes all the Kubernetes components associated with the chart and deletes the release.</p>\n<h2>Parameters</h2>\n<p>The following table lists the configurable parameters of the Invoice Ninja chart and their default values.</p>\n<blockquote>\n<p>NOTE: You MUST set any values that default to random or risk losing access after an upgrade. See how <a href=\"#installing-with-arguments\">here</a></p>\n</blockquote>\n<h3>Global Configuration</h3>\n<p>The following table shows the configuration options for the Invoice Ninja helm chart:</p>\n<h3>Global parameters</h3>\n<p>| Parameter                 | Description                                     | Default                                                 |\n| ------------------------- | ----------------------------------------------- | ------------------------------------------------------- |\n| <code>global.imageRegistry</code>    | Global Docker image registry                    | <code>nil</code>                                                   |\n| <code>global.imagePullSecrets</code> | Global Docker registry secret names as an array | <code>[]</code> (does not add image pull secrets to deployed pods) |\n| <code>global.storageClass</code>     | Global storage class for dynamic provisioning   | <code>nil</code>                                                   |</p>\n<h3>Common parameters</h3>\n<p>| Parameter           | Description                                                          | Default                        |\n| ------------------- | -------------------------------------------------------------------- | ------------------------------ |\n| <code>nameOverride</code>      | String to partially override common.names.fullname                   | <code>nil</code>                          |\n| <code>fullnameOverride</code>  | String to fully override common.names.fullname                       | <code>nil</code>                          |\n| <code>clusterDomain</code>     | Default Kubernetes cluster domain                                    | <code>cluster.local</code>                |\n| <code>commonLabels</code>      | Labels to add to all deployed objects                                | <code>{}</code>                           |\n| <code>commonAnnotations</code> | Annotations to add to all deployed objects                           | <code>{}</code>                           |\n| <code>kubeVersion</code>       | Force target Kubernetes version (using Helm capabilities if not set) | <code>nil</code>                          |\n| <code>extraDeploy</code>       | Array of extra objects to deploy with the release                    | <code>[]</code> (evaluated as a template) |</p>\n<h3>Invoice Ninja container parameters</h3>\n<p>| Parameter                | Description                                                                   | Default                                                 |\n| ------------------------ | ----------------------------------------------------------------------------- | ------------------------------------------------------- |\n| <code>image.registry</code>         | Invoice Ninja image registry                                                  | <code>docker.io</code>                                             |\n| <code>image.repository</code>       | Invoice Ninja image name                                                      | <code>invoiceninja/invoiceninja</code>                             |\n| <code>image.tag</code>              | Invoice Ninja image tag                                                       | Check <code>values.yaml</code> file                                |\n| <code>image.pullPolicy</code>       | Invoice Ninja image pull policy                                               | <code>IfNotPresent</code>                                          |\n| <code>image.pullSecrets</code>      | Specify docker-registry secret names as an array                              | <code>[]</code> (does not add image pull secrets to deployed pods) |\n| <code>image.debug</code>            | Specify if debug logs should be enabled                                       | <code>false</code>                                                 |\n| <code>debug</code>                  | Turn on debug mode on Invoice Ninja                                           | <code>false</code>                                                 |\n| <code>appKey</code>                 | Laravel Application Key (ignored if existing secret is provided)              | <em>random 32 character alphanumeric string</em>               |\n| <code>appURL</code>                 | Override Laravel Application URL (automatically set if blank)                 | <code>\"\"</code>                                                    |\n| <code>userEmail</code>              | Initial user email address                                                    | <code>admin@example.com</code>                                     |\n| <code>userPassword</code>           | Initial user password (ignored if existing secret is provided)                | <code>changeme!</code>                                             |\n| <code>logChannel</code>             | Name of log channel to use                                                    | <code>nil</code>                                                   |\n| <code>broadcastDriver</code>        | Name of broadcast driver to use                                               | <code>nil</code>                                                   |\n| <code>cacheDriver</code>            | Name of cache driver to use                                                   | <code>nil</code>                                                   |\n| <code>sessionDriver</code>          | Name of session driver to use                                                 | <code>nil</code>                                                   |\n| <code>queueConnection</code>        | Name of queue connection to use                                               | <code>nil</code>                                                   |\n| <code>pdfGenerator</code>           | PDF generation method (Allowed values: <code>snappdf</code> or <code>phantom</code>)                | <code>snappdf</code>                                               |\n| <code>mailer</code>                 | Name of the mailer to use (log, smtp, etc.)                                   | <code>log</code>                                                   |\n| <code>requireHttps</code>           | Force HTTPS for internal connections to Invoice Ninja (see #349)              | <code>false</code>                                                 |\n| <code>existingSecret</code>         | Use existing secret that contain the keys <code>APP_KEY</code> and <code>IN_PASSWORD</code>         | <code>nil</code>                                                   |\n| <code>extraEnvVars</code>           | Extra environment variables to be set on Invoice Ninja container              | <code>{}</code>                                                    |\n| <code>extraEnvVarsCM</code>         | Name of existing ConfigMap containing extra env vars                          | <code>nil</code>                                                   |\n| <code>extraEnvVarsSecret</code>     | Name of existing Secret containing extra env vars                             | <code>nil</code>                                                   |\n| <code>trustedProxy</code>           | List of trusted proxies for Invoice Ninja to communicate with the nginx proxy | <code>'*'</code>                                                   |\n| <code>extraVolumeMounts</code>      | Additional volume mounts                                                      | <code>[]</code>                                                    |\n| <code>resources</code>              | The resources for the Invoice Ninja container                                 | <code>{}</code>                                                    |\n| <code>livenessProbe</code>          | Liveness probe configuration for Invoice Ninja                                | Check <code>values.yaml</code> file                                |\n| <code>readinessProbe</code>         | Readiness probe configuration for Invoice Ninja                               | Check <code>values.yaml</code> file                                |\n| <code>containerPorts.fastcgi</code> | FastCGI port to expose at container level                                     | <code>9000</code>                                                  |</p>\n<h3>Inline web server container parameters (only used when <code>nginx.enabled</code> is <strong>not</strong> set to true)</h3>\n<p>| Parameter                | Description                                              | Default                                                 |\n| ------------------------ | -------------------------------------------------------- | ------------------------------------------------------- |\n| <code>http.image.registry</code>    | Nginx image registry                                     | <code>docker.io</code>                                             |\n| <code>http.image.repository</code>  | Nginx image name                                         | <code>invoiceninja/invoiceninja</code>                             |\n| <code>http.image.tag</code>         | Nginx image tag                                          | Check <code>values.yaml</code> file                                |\n| <code>http.image.pullPolicy</code>  | Nginx image pull policy                                  | <code>IfNotPresent</code>                                          |\n| <code>http.image.pullSecrets</code> | Specify docker-registry secret names as an array         | <code>[]</code> (does not add image pull secrets to deployed pods) |\n| <code>http.image.debug</code>       | Specify if debug logs should be enabled                  | <code>false</code>                                                 |\n| <code>extraEnvVars</code>           | Extra environment variables to be set on Nginx container | <code>{}</code>                                                    |\n| <code>extraEnvVarsCM</code>         | Name of existing ConfigMap containing extra env vars     | <code>nil</code>                                                   |\n| <code>extraEnvVarsSecret</code>     | Name of existing Secret containing extra env vars        | <code>nil</code>                                                   |\n| <code>extraVolumeMounts</code>      | Additional volume mounts                                 | <code>[]</code>                                                    |\n| <code>resources</code>              | The resources for the Nginx container                    | <code>{}</code>                                                    |\n| <code>livenessProbe</code>          | Liveness probe configuration for Nginx                   | Check <code>values.yaml</code> file                                |\n| <code>readinessProbe</code>         | Readiness probe configuration for Nginx                  | Check <code>values.yaml</code> file                                |\n| <code>containerPorts.http</code>    | HTTP port to expose at container level                   | <code>9000</code>                                                  |\n| <code>containerPorts.https</code>   | HTTPS port to expose at container level                  | <code>9000</code>                                                  |</p>\n<h3>Invoice Ninja deployment parameters</h3>\n<p>| Parameter                   | Description                                                                               | Default                        |\n| --------------------------- | ----------------------------------------------------------------------------------------- | ------------------------------ |\n| <code>replicaCount</code>              | Number of Invoice Ninja Pods to run                                                       | <code>1</code>                            |\n| <code>serviceAccountName</code>        | Name of a service account for the Invoice Ninja pods                                      | <code>default</code>                      |\n| <code>containerSecurityContext</code>  | Invoice Ninja containers' Security Context                                                | Check <code>values.yaml</code> file       |\n| <code>podSecurityContext</code>        | Invoice Ninja pods' Security Context                                                      | Check <code>values.yaml</code> file       |\n| <code>updateStrategy</code>            | Set up update strategy                                                                    | <code>RollingUpdate</code>                |\n| <code>podAntiAffinityPreset</code>     | Pod anti-affinity preset. Ignored if <code>affinity</code> is set. Allowed values: <code>soft</code> or <code>hard</code>  | <code>soft</code>                         |\n| <code>nodeAffinityPreset.type</code>   | Node affinity preset type. Ignored if <code>affinity</code> is set. Allowed values: <code>soft</code> or <code>hard</code> | <code>\"\"</code>                           |\n| <code>nodeAffinityPreset.key</code>    | Node label key to match. Ignored if <code>affinity</code> is set.                                    | <code>\"\"</code>                           |\n| <code>nodeAffinityPreset.values</code> | Node label values to match. Ignored if <code>affinity</code> is set.                                 | <code>[]</code>                           |\n| <code>affinity</code>                  | Affinity for pod assignment                                                               | <code>{}</code> (evaluated as a template) |\n| <code>nodeSelector</code>              | Node labels for pod assignment                                                            | <code>{}</code> (evaluated as a template) |\n| <code>tolerations</code>               | Tolerations for pod assignment                                                            | <code>[]</code> (evaluated as a template) |\n| <code>podLabels</code>                 | Extra labels for Invoice Ninja pods                                                       | <code>{}</code>                           |\n| <code>podAnnotations</code>            | Annotations for Invoice Ninja pods                                                        | <code>{}</code>                           |\n| <code>extraVolumes</code>              | Additional volumes                                                                        | <code>[]</code>                           |</p>\n<h3>Volume Permissions parameters</h3>\n<p>| Parameter                             | Description                                                                                                          | Default                                                 |\n| ------------------------------------- | -------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------- |\n| <code>volumePermissions.enabled</code>           | Enable init container that changes the owner and group of the persistent volume(s) mountpoint to <code>runAsUser:fsGroup</code> | <code>false</code>                                                 |\n| <code>volumePermissions.image.registry</code>    | Init container volume-permissions image registry                                                                     | <code>docker.io</code>                                             |\n| <code>volumePermissions.image.repository</code>  | Init container volume-permissions image name                                                                         | <code>bitnami/bitnami-shell</code>                                 |\n| <code>volumePermissions.image.tag</code>         | Init container volume-permissions image tag                                                                          | <code>\"10\"</code>                                                  |\n| <code>volumePermissions.image.pullPolicy</code>  | Init container volume-permissions image pull policy                                                                  | <code>Always</code>                                                |\n| <code>volumePermissions.image.pullSecrets</code> | Specify docker-registry secret names as an array                                                                     | <code>[]</code> (does not add image pull secrets to deployed pods) |\n| <code>volumePermissions.resources</code>         | Init container volume-permissions resource                                                                           | <code>{}</code>                                                    |</p>\n<h3>Exposure parameters</h3>\n<h4>FastCGI</h4>\n<p>| Parameter                          | Description                                                                | Default                        |\n| ---------------------------------- | -------------------------------------------------------------------------- | ------------------------------ |\n| <code>service.type</code>                     | Kubernetes Service type                                                    | <code>ClusterIP</code>                    |\n| <code>service.port</code>                     | Service FastCGI port                                                       | <code>9000</code>                         |\n| <code>service.nodePort</code>                 | Kubernetes FastCGI node port                                               | <code>\"\"</code>                           |\n| <code>service.clusterIP</code>                | Invoice Ninja service clusterIP IP                                         | <code>None</code>                         |\n| <code>service.loadBalancerSourceRanges</code> | Restricts access for LoadBalancer (only with <code>service.type: LoadBalancer</code>) | <code>[]</code>                           |\n| <code>service.loadBalancerIP</code>           | loadBalancerIP if service type is <code>LoadBalancer</code>                           | <code>nil</code>                          |\n| <code>service.externalTrafficPolicy</code>    | Enable client source IP preservation                                       | <code>Cluster</code>                      |\n| <code>service.annotations</code>              | Service annotations                                                        | <code>{}</code> (evaluated as a template) |</p>\n<h4>Inline web server (only used when <code>nginx.enabled</code> is <strong>not</strong> set to true)</h4>\n<p>| Parameter                               | Description                                                                | Default                        |\n| --------------------------------------- | -------------------------------------------------------------------------- | ------------------------------ |\n| <code>service.http.type</code>                     | Kubernetes Service type                                                    | <code>ClusterIP</code>                    |\n| <code>service.http.ports.http</code>               | Service HTTP port                                                          | <code>9000</code>                         |\n| <code>service.http.ports.https</code>              | Service HTTPS port                                                         | <code>9000</code>                         |\n| <code>service.http.nodePorts.http</code>           | Kubernetes HTTP node port                                                  | <code>\"\"</code>                           |\n| <code>service.http.nodePorts.https</code>          | Kubernetes HTTPS node port                                                 | <code>\"\"</code>                           |\n| <code>service.http.clusterIP</code>                | Invoice Ninja service clusterIP IP                                         | <code>None</code>                         |\n| <code>service.http.loadBalancerSourceRanges</code> | Restricts access for LoadBalancer (only with <code>service.type: LoadBalancer</code>) | <code>[]</code>                           |\n| <code>service.http.loadBalancerIP</code>           | loadBalancerIP if service type is <code>LoadBalancer</code>                           | <code>nil</code>                          |\n| <code>service.http.externalTrafficPolicy</code>    | Enable client source IP preservation                                       | <code>Cluster</code>                      |\n| <code>service.http.annotations</code>              | Service annotations                                                        | <code>{}</code> (evaluated as a template) |</p>\n<h3>Ingress parameters</h3>\n<h4>Inline web server (only used when <code>nginx.enabled</code> is <strong>not</strong> set to true)</h4>\n<p>| Parameter                  | Description                                                                                           | Default                  |\n| -------------------------- | ----------------------------------------------------------------------------------------------------- | ------------------------ |\n| <code>ingress.enabled</code>          | Enable ingress                                                                                        | <code>true</code>                   |\n| <code>ingress.certManager</code>      | Add the corresponding annotations for cert-manager integration                                        | <code>false</code>                  |\n| <code>ingress.pathType</code>         | Ingress path type                                                                                     | <code>ImplementationSpecific</code> |\n| <code>ingress.apiVersion</code>       | Force Ingress API version (automatically detected if not set)                                         | <code>nil</code>                    |\n| <code>ingress.ingressClassName</code> | IngressClass that will be be used to implement the Ingress (Kubernetes 1.18+)                         | <code>nil</code>                    |\n| <code>ingress.hostname</code>         | Default host for the ingress record                                                                   | <code>invoiceninja.local</code>     |\n| <code>ingress.path</code>             | Default path for the ingress record                                                                   | <code>/</code>                      |\n| <code>ingress.annotations</code>      | Additional custom annotations for the ingress record                                                  | <code>{}</code>                     |\n| <code>ingress.tls</code>              | Enable TLS configuration for the host defined at <code>ingress.hostname</code> parameter                         | <code>false</code>                  |\n| <code>ingress.extraHosts</code>       | An array with additional hostname(s) to be covered with the ingress record                            | <code>[]</code>                     |\n| <code>ingress.extraPaths</code>       | An array with additional arbitrary paths that may need to be added to the ingress under the main host | <code>[]</code>                     |\n| <code>ingress.extraTls</code>         | TLS configuration for additional hostname(s) to be covered with this ingress record                   | <code>[]</code>                     |\n| <code>ingress.secrets</code>          | Custom TLS certificates as secrets                                                                    | <code>[]</code>                     |</p>\n<h4>Nginx sub-chart</h4>\n<p>| Parameter                            | Description                           | Default                                                |\n| ------------------------------------ | ------------------------------------- | ------------------------------------------------------ |\n| <code>nginx.enabled</code>                      | Deploy Nginx sub-chart                | <code>false</code>                                                |\n| <code>nginx.service.type</code>                 | Kubernetes Service type               | <code>ClusterIP</code>                                            |\n| <code>nginx.ingress.enabled</code>              | Enable ingress controller resource    | <code>true</code>                                                 |\n| <code>nginx.ingress.hostname</code>             | Default host for the ingress resource | <code>invoiceninja.local</code>                                   |\n| <code>nginx.existingServerBlockConfigmap</code> | Custom NGINX server block config map  | <code>{{ include \"invoiceninja.nginx.serverBlockName\" . }}</code> |\n| <code>nginx.staticSitePVC</code>                | Name of Invoice Ninja public PVC      | <code>{{ include \"invoiceninja.public.storageName\" . }}</code>    |</p>\n<blockquote>\n<p>See <a href=\"#dependencies\">Dependencies</a> for more.</p>\n</blockquote>\n<h3>Persistence parameters</h3>\n<p>| Parameter                           | Description                                         | Default           |\n| ----------------------------------- | --------------------------------------------------- | ----------------- |\n| <code>persistence.public.enabled</code>        | Enable persistence using PVC                        | <code>true</code>            |\n| <code>persistence.public.existingClaim</code>  | Enable persistence using an existing PVC            | <code>nil</code>             |\n| <code>persistence.public.storageClass</code>   | PVC Storage Class                                   | <code>nil</code>             |\n| <code>persistence.public.accessModes</code>    | PVC Access Modes                                    | <code>[ReadWriteOnce]</code> |\n| <code>persistence.public.size</code>           | PVC Storage Request                                 | <code>1Gi</code>             |\n| <code>persistence.public.dataSource</code>     | PVC data source                                     | <code>{}</code>              |\n| <code>persistence.storage.enabled</code>       | Enable persistence using PVC (only for FILE driver) | <code>false</code>           |\n| <code>persistence.storage.existingClaim</code> | Enable persistence using an existing PVC            | <code>nil</code>             |\n| <code>persistence.storage.storageClass</code>  | PVC Storage Class                                   | <code>nil</code>             |\n| <code>persistence.storage.accessModes</code>   | PVC Access Modes                                    | <code>[ReadWriteMany]</code> |\n| <code>persistence.storage.size</code>          | PVC Storage Request                                 | <code>5Gi</code>             |\n| <code>persistence.storage.dataSource</code>    | PVC data source                                     | <code>{}</code>              |</p>\n<blockquote>\n<p>See <code>values.yaml</code> for more details.</p>\n</blockquote>\n<h3>Redis parameters</h3>\n<p>| Parameter                         | Description                                  | Default                                   |\n| --------------------------------- | -------------------------------------------- | ----------------------------------------- |\n| <code>redis.enabled</code>                   | If external redis is used, set it to <code>false</code> | <code>true</code>                                    |\n| <code>redis.auth.password</code>             | Redis password                               | <em>random 10 character alphanumeric string</em> |\n| <code>redis.auth.sentinel</code>             | Use password for sentinel containers         | <code>false</code>                                   |\n| <code>redis.sentinel.enabled</code>          | Enable sentinel containers                   | <code>true</code>                                    |\n| <code>redis.sentinel.quorum</code>           | Sentinel Quorum                              | <code>1</code>                                       |\n| <code>redis.replica.replicaCount</code>      | Number of Redis replicas to deploy           | <code>1</code>                                       |\n| <code>externalRedis.host</code>              | Host of the external redis                   | <code>nil</code>                                     |\n| <code>externalRedis.port</code>              | Port of the external redis                   | <code>6379</code>                                    |\n| <code>externalRedis.password</code>          | Password for the external redis              | <code>nil</code>                                     |\n| <code>externalRedis.sentinel</code>          | Using sentinels                              | <code>false</code>                                   |\n| <code>externalRedis.databases.default</code> | Database to use by default                   | <code>0</code>                                       |\n| <code>externalRedis.databases.cache</code>   | Database to use by cache                     | <code>1</code>                                       |</p>\n<blockquote>\n<p>See <a href=\"#dependencies\">Dependencies</a> for more.</p>\n</blockquote>\n<h3>Database parameters</h3>\n<p>| Parameter                         | Description                                 | Default                                   |\n| --------------------------------- | ------------------------------------------- | ----------------------------------------- |\n| <code>mariadb.enabled</code>                 | Deploy MariaDB container(s)                 | <code>true</code>                                    |\n| <code>mariadb.auth.rootPassword</code>       | Password for the MariaDB <code>root</code> user        | <em>random 10 character alphanumeric string</em> |\n| <code>mariadb.auth.database</code>           | Database name to create                     | <code>invoiceninja</code>                            |\n| <code>mariadb.auth.username</code>           | Database user to create                     | <code>invoiceninja</code>                            |\n| <code>mariadb.auth.password</code>           | Password for the database                   | <em>random 10 character alphanumeric string</em> |\n| <code>externalDatabase.host</code>           | Host of the external database               | <code>nil</code>                                     |\n| <code>externalDatabase.user</code>           | Existing username in the external db        | <code>invoiceninja</code>                            |\n| <code>externalDatabase.password</code>       | Password for the above username             | <code>nil</code>                                     |\n| <code>externalDatabase.database</code>       | Name of the existing database               | <code>invoiceninja</code>                            |\n| <code>externalDatabase.port</code>           | Database port number                        | <code>3306</code>                                    |\n| <code>externalDatabase.existingSecret</code> | Name of the database existing Secret Object | <code>nil</code>                                     |</p>\n<blockquote>\n<p>See <a href=\"#dependencies\">Dependencies</a> for more.</p>\n</blockquote>\n<h3>Other parameters</h3>\n<p>| Parameter                  | Description                              | Default |\n| -------------------------- | ---------------------------------------- | ------- |\n| <code>autoscaling.enabled</code>      | Enable autoscaling for Invoice Ninja     | <code>false</code> |\n| <code>autoscaling.minReplicas</code>  | Minimum number of Invoice Ninja replicas | <code>1</code>     |\n| <code>autoscaling.maxReplicas</code>  | Maximum number of Invoice Ninja replicas | <code>11</code>    |\n| <code>autoscaling.targetCPU</code>    | Target CPU utilization percentage        | <code>nil</code>   |\n| <code>autoscaling.targetMemory</code> | Target Memory utilization percentage     | <code>nil</code>   |</p>\n<h2>Installing with Arguments</h2>\n<p>Specify each parameter using the <code>--set key=value[,key=value]</code> argument to <code>helm install</code>. For example,</p>\n<p><code>bash\nhelm install invoiceninja \\\n  --set appKey=changeit \\\n  --set replicaCount=3 \\\n  --set persistence.public.accessModes[0]=ReadWriteMany\n  --set redis.auth.password=changeit \\\n  --set redis.sentinel.quorum=2 \\\n  --set redis.replica.replicaCount=3 \\\n  --set mariadb.auth.rootPassword=changeit \\\n  --set mariadb.auth.password=changeit \\\n  invoiceninja/invoiceninja</code></p>\n<p>The above command sets the number of replicas to 3 for a highly available (HA) setup and uses a <code>ReadWriteMany</code> volume. Note that you would need to use an external DB such as MariaDB Galera for a full HA production setup. For a production environment, it is recommended that you spin up the required databases in a separate Helm Chart to decouple the upgrading process.</p>\n<p>Alternatively, a YAML file that specifies the values for the parameters can be provided while <a href=\"https://helm.sh/docs/helm/helm_install/\">installing</a> the chart. For example,</p>\n<p>```yaml</p>\n<h1>values.yaml</h1>\n<p>appKey: changeit\npersistence:\n  public:\n    accessModes:\n      - ReadWriteMany\nredis:\n  auth:\n    password: changeit\nmariadb:\n  auth:\n    rootPassword: changeit\n    password: changeit\n```</p>\n<p><code>bash\nhelm install invoiceninja -f values.yaml invoiceninja/invoiceninja</code></p>\n<h2>Setting Environment Variables</h2>\n<p>Should you need to inject any environment variables such as those in <a href=\"https://github.com/invoiceninja/dockerfiles/blob/master/env\">here</a> into the <code>invoiceninja</code> container, you can use the <code>extraEnvVars</code> option:</p>\n<p>```yaml</p>\n<h1>... values.yaml file</h1>\n<h1>In this example, we are setting the SMTP MAIL_HOST to be 'smtp.mailtrap.io'</h1>\n<p>extraEnvVars:\n  - name: MAIL_HOST\n    value: 'smtp.mailtrap.io' # all values must be strings, so other types must be surrounded in quotes\n```</p>\n<p>Alternatively you can provide the name of an existing <code>configmap</code> or <code>secret</code> object:</p>\n<p><code>bash\nkubectl create configmap examplemap --from-literal=MAIL_HOST='smtp.mailtrap.io'</code></p>\n<p>```yaml</p>\n<h1>... values.yaml file</h1>\n<p>extraEnvVarsCM: examplemap\n```</p>\n<h2>Inline webserver vs Nginx sub-chart</h2>\n<p>Since there are many people without access to a <code>ReadWriteMany</code> volume, the inline Nginx web server will allow you to use a <code>ReadWriteOnce</code> public volume limited to 1 IN replica.</p>\n<p>If you have the ability to use <code>ReadWriteMany</code> persistent volume, you can choose between the two by setting the <code>nginx.enabled</code> parameter. Setting <code>nginx.enabled</code> to true will enable the Nginx sub-chart and will provide you with some additional features, such as:</p>\n<ul>\n<li>independent scaling of Nginx and IN pods</li>\n<li>separate resource limits/requests</li>\n<li>other features available from the sub-chart</li>\n</ul>\n<h2>Upgrading</h2>\n<h3>To 0.10.0</h3>\n<p>The following chart dependencies have been upgraded.\n- MariaDB \n- Redis\n- Nginx\n- Bitnami common</p>\n<p>Please take note that this upgrade MariaDB from 10.5 to 10.6. Please backup your database before proceeding.</p>\n<h3>To 0.8.0</h3>\n<p>To improve the accessibility of this chart to regular users. Some of the defaults have been changed. This include:</p>\n<ul>\n<li><code>persistence.public.accessModes</code> now defaults to <code>ReadWriteOnce</code>.</li>\n<li><code>nginx.enabled</code> now defaults to false.</li>\n<li><code>redis.replica.replicaCount</code> and <code>redis.sentinel.quorum</code> now defaults to <code>1</code>.</li>\n</ul>\n<p>Other changes:</p>\n<ul>\n<li><code>snappdf</code> parameter has been replaced by <code>pdfGenerator</code>.</li>\n</ul>\n<h3>To 0.7.0</h3>\n<ul>\n<li>Redis chart dependency has been upgraded and may not be backwards compatible with previous versions. See <a href=\"https://github.com/bitnami/charts/tree/master/bitnami/redis\">here</a> for more info.</li>\n<li>Storage persitence defaults to <code>false</code>. Set to <code>true</code> if not using Redis or using FILE driver</li>\n</ul>",
+        "changelog": null
+    }
+}
