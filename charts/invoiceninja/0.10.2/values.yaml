@@ -536,7 +536,7 @@ ingress:
 ##
 persistence:
   public:
-    enabled: true
+    enabled: false
     ## Invoice Ninja data Persistent Volume Storage Class
     ## If defined, storageClassName: <storageClass>
     ## If set to "-", storageClassName: "", which disables dynamic provisioning
@@ -689,4 +689,4 @@ nginx:
   existingServerBlockConfigmap: '{{ include "invoiceninja.nginx.serverBlockName" . }}'
   ## Use the public PVC created by Invoice Ninja
   ##
-  staticSitePVC: '{{ include "invoiceninja.public.storageName" . }}'
+  ## staticSitePVC: '{{ include "invoiceninja.public.storageName" . }}'
