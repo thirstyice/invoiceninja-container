@@ -1,26 +1,18 @@
 {{- define "nginx.configuration" -}}
 {{- $fullname := (include "ix.v1.common.lib.chart.names.fullname" $) -}}
 
-{{- if .Values.inNetwork.certificateID }}
+{{- $serverProtocol := "" -}}
+{{- if .Values.inNetwork.requireHttps -}}
+  {{- $serverProtocol := " ssl http2" -}}
+{{- else -}}
+  {{- $serverProtocol := " http2" -}}
+{{- end -}}
+
 scaleCertificate:
   invoiceninja-cert:
     enabled: true
     id: {{ .Values.inNetwork.certificateID }}
 
-  {{ $timeout := 60 }}
-  {{ $size := .Values.inConfig.maxUploadLimit | default 3 }}
-  {{ $useDiffAccessPort := false }}
-  {{ $externalAccessPort := ":$server_port" }}
-  {{/* Safely access key as it is conditionaly shown */}}
-  {{ if hasKey .Values.inNetwork "nginx" }}
-    {{ $useDiffAccessPort = .Values.inNetwork.nginx.useDifferentAccessPort }}
-    {{ $externalAccessPort = printf ":%v" .Values.inNetwork.nginx.externalAccessPort }}
-    {{ $timeout = .Values.inNetwork.nginx.proxyTimeouts | default 60 }}
-  {{ end }}
-  {{/* If its 443, do not append it on the rewrite at all */}}
-  {{ if eq $externalAccessPort ":443" }}
-    {{ $externalAccessPort = "" }}
-  {{ end }}
 configmap:
   nginx:
     enabled: true
@@ -29,34 +21,21 @@ configmap:
         events {}
         http {
           server {
-            listen {{ .Values.inNetwork.webPort }} ssl http2;
-            listen [::]:{{ .Values.inNetwork.webPort }} ssl http2;
-
-            # Redirect HTTP to HTTPS
-            error_page 497 301 =307 https://$host{{ $externalAccessPort }}$request_uri;
+            listen {{ .Values.inNetwork.webPort }} {{ $serverProtocol }};
+            listen [::]:{{ .Values.inNetwork.webPort }} {{ $serverProtocol }};
 
             ssl_certificate '/etc/nginx-certs/public.crt';
             ssl_certificate_key '/etc/nginx-certs/private.key';
 
-            client_max_body_size {{ $size }}G;
-
-            add_header Strict-Transport-Security "max-age=15552000; includeSubDomains; preload" always;
+            client_max_body_size 1G;
 
             location = /robots.txt {
               allow all;
               log_not_found off;
               access_log off;
             }
-
-            location = /.well-known/carddav {
-              return 301 $scheme://$host{{ $externalAccessPort }}/remote.php/dav;
-            }
-
-            location = /.well-known/caldav {
-              return 301 $scheme://$host{{ $externalAccessPort }}/remote.php/dav;
-            }
             
-            root /var/www/app/public;
+            root /var/www/public;
             index index.php
 
             location / {
