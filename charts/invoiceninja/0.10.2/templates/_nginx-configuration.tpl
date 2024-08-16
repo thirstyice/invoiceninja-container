@@ -57,4 +57,3 @@ configmap:
           }
         }
 {{- end -}}
-{{- end -}}

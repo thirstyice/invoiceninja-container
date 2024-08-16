@@ -61,17 +61,3 @@ secret:
       REQUIRE_HTTPS: {{ .Values.inNetwork.requireHttps | quote }}
       TRUSTED_PROXIES: {{ .Values.inConfig.trustedProxies | quote }}
       PHP_MEMORY_LIMIT: {{ printf "%vM" .Values.inConfig.phpMemoryLimit }}
-
-  mariadb-backup-creds:
-    enabled: true
-    annotations:
-      helm.sh/hook: "pre-upgrade"
-      helm.sh/hook-delete-policy: "hook-succeeded"
-      helm.sh/hook-weight: "1"
-    data:
-      MARIADB_USER: {{ $dbUser }}
-      MARIADB_DB: {{ $dbName }}
-      MARIADB_PASSWORD: {{ $dbPass }}
-      MARIADB_HOST: {{ $dbHost }}
-  {{- end }}
-{{- end -}}

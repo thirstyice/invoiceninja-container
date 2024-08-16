@@ -20,3 +20,4 @@ workload:
               enabled: true
               type: tcp
               port: {{ .Values.inNetwork.webPort }}
+{{- end -}}
