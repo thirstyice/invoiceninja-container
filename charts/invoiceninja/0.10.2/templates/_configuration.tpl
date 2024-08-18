@@ -2,13 +2,17 @@
 
   {{- $fullname := (include "ix.v1.common.lib.chart.names.fullname" $) -}}
 
+  {{- $appKey := (randAlphaNum 32) -}}
+  {{- if .Values.inConfig.appKey -}}
+    {{- $appKey = .Values.inConfig.appKey -}}
+  {{- end -}}
+
   {{- $dbHost := (printf "%s-mariadb" $fullname) -}}
   {{- $dbUser := "invoiceninja" -}}
   {{- $dbName := "invoiceninja" -}}
   {{- $dbPass := (randAlphaNum 32) -}}
 
   {{- $redisHost := (printf "%s-redis" $fullname) -}}
-
   {{- $redisPass := randAlphaNum 32 -}}
 
   {{/* Temporary set dynamic db details on values,
@@ -25,7 +29,7 @@ secret:
       MARIADB_USER: {{ $dbUser }}
       MARIADB_DATABASE: {{ $dbName }}
       MARIADB_PASSWORD: {{ $dbPass }}
-      MARIADB_ROOT_PASSWORD: {{ $dbRootPass }}
+      MARIADB_ROOT_PASSWORD: {{ .Values.inConfig.dbRootPass | quote }}
       MARIADB_HOST: {{ $dbHost }}
 
   redis-creds:
@@ -51,6 +55,7 @@ secret:
       QUEUE_CONNECTION: redis
       PDF_GENERATOR: {{ .Values.inConfig.pdfGenerator | quote }}
       REDIS_HOST: {{ $redisHost }}
+      REDIS_PASSWORD: {{ $redisPass }}
       REDIS_PORT: "6379"
       REDIS_DB: "0"
       REDIS_CACHE_DB: "1"

@@ -8,11 +8,6 @@ nginxImage:
   repository: nginx
   tag: 1.25.4
 
-resources:
-  limits:
-    cpu: 4000m
-    memory: 8Gi
-
 podOptions:
   dnsConfig:
     options: []

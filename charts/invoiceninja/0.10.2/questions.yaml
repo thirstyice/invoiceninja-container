@@ -39,7 +39,6 @@ questions:
           description: "A 32 character long Application Key"
           schema:
             type: string
-            required: true
             min_length: 32
             max_length: 32
             default: ""
@@ -149,6 +148,12 @@ questions:
             required: true
             default: 1024
             min: 256
+        - variable: dbRootPass
+          label: Databese root password
+          description: Root password for the mariadb database
+          schema:
+            type: string
+            required: true
         - variable: extraEnvVars
           label: "Extra Environment Variables"
           description: "Add extra env vars"
