@@ -5,6 +5,8 @@ groups:
     description: "Configure Invoice Ninja"
   - name: Network Configuration
     description: Configure the network
+  - name: Storage Configuration
+    description: Define Storage locations
 
 portals:
   web_portal:
