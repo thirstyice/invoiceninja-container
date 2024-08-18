@@ -7,6 +7,8 @@ groups:
     description: Configure the network
   - name: Storage Configuration
     description: Define Storage locations
+  - name: Resources Configuration
+    description: Define app resources
 
 portals:
   web_portal:
