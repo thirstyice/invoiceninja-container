@@ -1,0 +1,18 @@
+{{- include "ix.v1.common.loader.init" . -}}
+
+{{- include "invoiceninja.migration" $ -}}
+
+{{/* Merge the templates with Values */}}
+{{- $_ := mustMergeOverwrite .Values (include "invoiceninja.workload" $ | fromYaml) -}}
+{{- $_ := mustMergeOverwrite .Values (include "invoiceninja.configuration" $ | fromYaml) -}}
+{{- $_ := mustMergeOverwrite .Values (include "nginx.workload" $ | fromYaml) -}}
+{{- $_ := mustMergeOverwrite .Values (include "nginx.configuration" $ | fromYaml) -}}
+{{- $_ := mustMergeOverwrite .Values (include "mariadb.workload" $ | fromYaml) -}}
+{{- $_ := mustMergeOverwrite .Values (include "redis.workload" $ | fromYaml) -}}
+{{- $_ := mustMergeOverwrite .Values (include "invoiceninja.service" $ | fromYaml) -}}
+{{- $_ := mustMergeOverwrite .Values (include "invoiceninja.persistence" $ | fromYaml) -}}
+
+{{/* Create the configmap for portal manually*/}}
+{{- include "invoiceninja.portal" $ -}}
+
+{{- include "ix.v1.common.loader.apply" . -}}
