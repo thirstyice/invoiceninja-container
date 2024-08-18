@@ -25,7 +25,6 @@ sources:
   - https://github.com/invoiceninja/invoiceninja
   - https://github.com/invoiceninja/dockerfiles
 dependencies:
-  dependencies:
   - name: common
     repository: file://../../../common
     version: 1.2.9
