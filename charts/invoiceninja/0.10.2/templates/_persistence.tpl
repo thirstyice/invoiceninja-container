@@ -28,7 +28,7 @@ persistence:
         invoiceninja-nginx:
           mountPath: /var/www/app/storage
 
-  {{- range $idx, $storage := .Values.ncStorage.additionalStorages }}
+  {{- range $idx, $storage := .Values.inStorage.additionalStorages }}
   {{ printf "nc-%v:" (int $idx) }}
     enabled: true
     {{- include "ix.v1.common.app.storageOptions" (dict "storage" $storage) | nindent 4 }}
