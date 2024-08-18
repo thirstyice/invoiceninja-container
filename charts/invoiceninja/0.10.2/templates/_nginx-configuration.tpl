@@ -35,7 +35,7 @@ configmap:
               access_log off;
             }
             
-            root /var/www/public;
+            root /var/www/app/public;
             index index.php
 
             location / {
@@ -47,7 +47,7 @@ configmap:
 
             location ~ \.php$ {
               fastcgi_split_path_info ^(.+\.php)(/.+)$;
-              fastcgi_pass unix:/var/run/php-fpm.sock;
+              fastcgi_pass invoiceninja:9000;
               fastcgi_index index.php;
               include fastcgi_params;
               fastcgi_param SCRIPT_FILENAME /var/www/app/public$fastcgi_script_name;

@@ -3,6 +3,8 @@ groups:
     description: "Set the environment that will be visible to the container"
   - name: Invoice Ninja Configuration
     description: "Configure Invoice Ninja"
+  - name: Network Configuration
+    description: Configure the network
 
 portals:
   web_portal:
@@ -43,6 +45,7 @@ questions:
           description: "Override app URL"
           schema:
             type: string
+            required: true
         - variable: userEmail
           label: User Email
           description: "Email of user to create on first run"
@@ -73,6 +76,37 @@ questions:
                 description: "Use snappdf"
               - value: "phantom"
                 description: "Use Phantom JS"
+        - variable: logChannel
+          label: Log Connection
+          description: Invoiceninja log channel (some channels may require additional env vars; see docs)
+          schema:
+            type: string
+            default: stderr
+            enum:
+              - value: invoiceninja
+                description: invoiceninja.log
+              - value: invoiceninja-reminders
+                description: invoiceninja-reminders.log
+              - value: stack
+                description: Stack
+              - value: single
+                description: All in one file
+              - value: daily
+                description: Daily
+              - value: slack
+                description: Slack (see docs for config)
+              - value: papertrail
+                description: Papertrail (see docs for config)
+              - value: stderr
+                description: stderr
+              - value: syslog
+                description: syslog
+              - value: errorlog
+                description: errorlog
+              - value: "null"
+                description: None
+              - value: emergency
+                description: emergency
         - variable: mailer
           label: Queue Connection
           description: "Name of queue connection to use. May need to define other envs; see https://github.com/invoiceninja/invoiceninja/blob/v5-stable/config/mail.php"
@@ -103,19 +137,21 @@ questions:
                 description: "Office 365"
               - value: "failover"
                 description: "Failover"
-        - variable: requireHttps
-          label: Require HTTPS
-          description: "Force HTTPS for all connections to Invoice Ninja"
+        - variable: phpMemoryLimit
+          label: PHP Memory Limit
+          description: The memory limit for PHP (MB)
           schema:
-            type: boolean
-            default: false
+            type: int
+            required: true
+            default: 1024
+            min: 256
         - variable: extraEnvVars
           label: "Extra Environment Variables"
           description: "Add extra env vars"
           schema:
             type: list
             items:
-              - variable: envVar
+              - variable: env
                 label: "Environment Variable"
                 description: "Environment Variable"
                 schema:
@@ -133,7 +169,8 @@ questions:
                       schema:
                         type: string
                         required: true
-    - variable: inNetwork
+
+  - variable: inNetwork
     label: ""
     group: Network Configuration
     schema:
@@ -148,49 +185,328 @@ questions:
             min: 9000
             max: 65535
             required: true
+        - variable: requireHttps
+          label: Require HTTPS
+          description: "Force HTTPS for all connections to Invoice Ninja"
+          schema:
+            type: boolean
+            default: false
         - variable: certificateID
           label: Certificate
           description: The certificate to use
           schema:
+
             type: int
             "null": true
             $ref:
               - "definitions/certificate"
-        - variable: nginx
-          label: Nginx Configuration
+
+
+  - variable: inStorage
+    label: ""
+    group: Storage Configuration
+    schema:
+      type: dict
+      attrs:
+        - variable: data
+          label: Invoiceninja data storage
+          description: The place to store Invoice Ninja data
           schema:
             type: dict
-            show_if: [["certificateID", "!=", null]]
             attrs:
-              - variable: proxyTimeouts
-                label: Proxy timeouts (Seconds)
+              - variable: type
+                label: Type
                 description: |
-                  Applies the timeout to the following settings:</br>
-                  - proxy_connect_timeout</br>
-                  - proxy_send_timeout</br>
-                  - proxy_read_timeout</br>
+                  ixVolume: Is dataset created automatically by the system.</br>
+                  Host Path: Is a path that already exists on the system.
                 schema:
-                  type: int
-                  min: 30
-                  default: 60
+                  type: string
                   required: true
-              - variable: useDifferentAccessPort
-                label: Use different port for URL rewrites
+                  default: ixVolume
+                  enum:
+                    - value: hostPath
+                      description: Host Path (Path that already exists on the system)
+                    - value: ixVolume
+                      description: ixVolume (Dataset created automatically by the system)
+              - variable: ixVolumeConfig
+                label: ixVolume Configuration
+                description: The configuration for the ixVolume dataset.
+                schema:
+                  type: dict
+                  show_if: [["type", "=", "ixVolume"]]
+                  $ref:
+                    - "normalize/ixVolume"
+                  attrs:
+                    - variable: aclEnable
+                      label: Enable ACL
+                      description: Enable ACL for the dataset.
+                      schema:
+                        type: boolean
+                        default: false
+                    - variable: datasetName
+                      label: Dataset Name
+                      description: The name of the dataset to use for storage.
+                      schema:
+                        type: string
+                        required: true
+                        immutable: true
+                        hidden: true
+                        default: "data"
+                    - variable: aclEntries
+                      label: ACL Configuration
+                      schema:
+                        type: dict
+                        show_if: [["aclEnable", "=", true]]
+                        attrs: []
+              - variable: hostPathConfig
+                label: Host Path Configuration
+                schema:
+                  type: dict
+                  show_if: [["type", "=", "hostPath"]]
+                  attrs:
+                    - variable: aclEnable
+                      label: Enable ACL
+                      description: Enable ACL for the dataset.
+                      schema:
+                        type: boolean
+                        default: false
+                    - variable: acl
+                      label: ACL Configuration
+                      schema:
+                        type: dict
+                        show_if: [["aclEnable", "=", true]]
+                        attrs: []
+                        $ref:
+                          - "normalize/acl"
+                    - variable: hostPath
+                      label: Host Path
+                      description: The host path to use for storage.
+                      schema:
+                        type: hostpath
+                        show_if: [["aclEnable", "=", false]]
+                        required: true
+        - variable: storage
+          label: Invoiceninja storage storage
+          description: The place to store Invoice Ninja storage (logs, mostly)
+          schema:
+            type: dict
+            attrs:
+              - variable: type
+                label: Type
                 description: |
-                  If enabled, the URL rewrite will use [Access Port] defined below instead of the [Node Port].</br>
-                  Note that Nextcloud will still listen on the [Node Port]. (Default 9001)
+                  ixVolume: Is dataset created automatically by the system.</br>
+                  Host Path: Is a path that already exists on the system.
                 schema:
-                  type: boolean
-                  default: false
-              - variable: externalAccessPort
-                label: External Access Port
-                schema:
-                  type: int
-                  show_if: [["useDifferentAccessPort", "=", true]]
-                  min: 443
-                  max: 65535
-                  default: 443
+                  type: string
                   required: true
+                  default: ixVolume
+                  enum:
+                    - value: hostPath
+                      description: Host Path (Path that already exists on the system)
+                    - value: ixVolume
+                      description: ixVolume (Dataset created automatically by the system)
+              - variable: ixVolumeConfig
+                label: ixVolume Configuration
+                description: The configuration for the ixVolume dataset.
+                schema:
+                  type: dict
+                  show_if: [["type", "=", "ixVolume"]]
+                  $ref:
+                    - "normalize/ixVolume"
+                  attrs:
+                    - variable: aclEnable
+                      label: Enable ACL
+                      description: Enable ACL for the dataset.
+                      schema:
+                        type: boolean
+                        default: false
+                    - variable: datasetName
+                      label: Dataset Name
+                      description: The name of the dataset to use for storage.
+                      schema:
+                        type: string
+                        required: true
+                        immutable: true
+                        hidden: true
+                        default: "data"
+                    - variable: aclEntries
+                      label: ACL Configuration
+                      schema:
+                        type: dict
+                        show_if: [["aclEnable", "=", true]]
+                        attrs: []
+              - variable: hostPathConfig
+                label: Host Path Configuration
+                schema:
+                  type: dict
+                  show_if: [["type", "=", "hostPath"]]
+                  attrs:
+                    - variable: aclEnable
+                      label: Enable ACL
+                      description: Enable ACL for the dataset.
+                      schema:
+                        type: boolean
+                        default: false
+                    - variable: acl
+                      label: ACL Configuration
+                      schema:
+                        type: dict
+                        show_if: [["aclEnable", "=", true]]
+                        attrs: []
+                        $ref:
+                          - "normalize/acl"
+                    - variable: hostPath
+                      label: Host Path
+                      description: The host path to use for storage.
+                      schema:
+                        type: hostpath
+                        show_if: [["aclEnable", "=", false]]
+                        required: true
+
+
+        - variable: additionalStorages
+          label: Additional Storage
+          description: Additional storage locations.
+          schema:
+            type: list
+            default: []
+            items:
+              - variable: storageEntry
+                label: Storage Entry
+                schema:
+                  type: dict
+                  attrs:
+                    - variable: type
+                      label: Type
+                      description: |
+                        ixVolume: Is dataset created automatically by the system.</br>
+                        Host Path: Is a path that already exists on the system.</br>
+                        SMB Share: Is a SMB share that is mounted to a persistent volume claim.
+                      schema:
+                        type: string
+                        required: true
+                        default: "ixVolume"
+                        enum:
+                          - value: "hostPath"
+                            description: Host Path (Path that already exists on the system)
+                          - value: "ixVolume"
+                            description: ixVolume (Dataset created automatically by the system)
+                          - value: "smb-pv-pvc"
+                            description: SMB Share (Mounts a persistent volume claim to a SMB share)
+                    - variable: readOnly
+                      label: Read Only
+                      description: Mount the volume as read only.
+                      schema:
+                        type: boolean
+                        default: false
+                    - variable: mountPath
+                      label: Mount Path
+                      description: The path inside the container to mount the storage.
+                      schema:
+                        type: path
+                        required: true
+                    - variable: hostPathConfig
+                      label: Host Path Configuration
+                      schema:
+                        type: dict
+                        show_if: [["type", "=", "hostPath"]]
+                        attrs:
+                          - variable: aclEnable
+                            label: Enable ACL
+                            description: Enable ACL for the dataset.
+                            schema:
+                              type: boolean
+                              default: false
+                          - variable: acl
+                            label: ACL Configuration
+                            schema:
+                              type: dict
+                              show_if: [["aclEnable", "=", true]]
+                              attrs: []
+                              $ref:
+                                - "normalize/acl"
+                          - variable: hostPath
+                            label: Host Path
+                            description: The host path to use for storage.
+                            schema:
+                              type: hostpath
+                              show_if: [["aclEnable", "=", false]]
+                              required: true
+                    - variable: ixVolumeConfig
+                      label: ixVolume Configuration
+                      description: The configuration for the ixVolume dataset.
+                      schema:
+                        type: dict
+                        show_if: [["type", "=", "ixVolume"]]
+                        $ref:
+                          - "normalize/ixVolume"
+                        attrs:
+                          - variable: aclEnable
+                            label: Enable ACL
+                            description: Enable ACL for the dataset.
+                            schema:
+                              type: boolean
+                              default: false
+                          - variable: datasetName
+                            label: Dataset Name
+                            description: The name of the dataset to use for storage.
+                            schema:
+                              type: string
+                              required: true
+                              immutable: true
+                              default: "storage_entry"
+                          - variable: aclEntries
+                            label: ACL Configuration
+                            schema:
+                              type: dict
+                              show_if: [["aclEnable", "=", true]]
+                              attrs: []
+                    - variable: smbConfig
+                      label: SMB Share Configuration
+                      description: The configuration for the SMB Share.
+                      schema:
+                        type: dict
+                        show_if: [["type", "=", "smb-pv-pvc"]]
+                        attrs:
+                          - variable: server
+                            label: Server
+                            description: The server for the SMB share.
+                            schema:
+                              type: string
+                              required: true
+                          - variable: share
+                            label: Share
+                            description: The share name for the SMB share.
+                            schema:
+                              type: string
+                              required: true
+                          - variable: domain
+                            label: Domain (Optional)
+                            description: The domain for the SMB share.
+                            schema:
+                              type: string
+                          - variable: username
+                            label: Username
+                            description: The username for the SMB share.
+                            schema:
+                              type: string
+                              required: true
+                          - variable: password
+                            label: Password
+                            description: The password for the SMB share.
+                            schema:
+                              type: string
+                              required: true
+                              private: true
+                          - variable: size
+                            label: Size (in Gi)
+                            description: The size of the volume quota.
+                            schema:
+                              type: int
+                              required: true
+                              min: 1
+                              default: 1
+
 
   - variable: resources
     group: Resources Configuration
