@@ -4,5 +4,7 @@ workload:
 {{- include "ix.v1.common.app.mariadb" (dict "name" "mariadb"
                                               "secretName" "mariadb-creds"
                                               "backupPath" "/mariadb-backup"
-                                              "resources" .Values.resources | nindent 2 }}
+                                              "resources" .Values.resources | nindent 2
+                                        )
+}}
 {{- end -}}
