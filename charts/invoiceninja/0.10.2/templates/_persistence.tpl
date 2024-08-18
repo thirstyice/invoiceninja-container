@@ -68,6 +68,5 @@ persistence:
         nginx:
           mountPath: /etc/nginx
           readOnly: true
-  {{- end -}}
 
 {{- end -}}
