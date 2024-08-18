@@ -51,10 +51,6 @@ additionalEnvs: []
 inNetwork:
   webPort: 30072
   certificateID:
-  nginx:
-    proxyTimeouts: 120
-    useDifferentAccessPort: false
-    externalAccessPort: 30073
 
 inStorage:
   data:

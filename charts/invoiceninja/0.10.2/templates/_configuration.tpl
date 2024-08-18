@@ -40,7 +40,7 @@ secret:
     data:
       APP_URL: {{ .Values.inConfig.appURL | quote }}
       DB_HOST: {{ $dbHost }}
-      DB_PORT: {{ $dbPort }}
+      DB_PORT: "3306"
       DB_DATABASE: {{ $dbName }}
       DB_USERNAME: {{ $dbUser }}
       LOG_CHANNEL: {{ .Values.inConfig.logChannel | quote}}
