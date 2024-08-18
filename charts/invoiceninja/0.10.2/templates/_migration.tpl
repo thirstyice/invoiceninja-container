@@ -22,6 +22,8 @@
   {{- if and $versions.old $versions.new -}}
     {{- $oldV := semver $versions.old -}}
     {{- $newV := semver $versions.new -}}
+  {{- end -}}
+{{- end -}}
 
 {{- define "invoiceninja.is-migration" -}}
   {{- $isMigration := "" -}}
